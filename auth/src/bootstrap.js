@@ -4,7 +4,7 @@ import { createMemoryHistory, createBrowserHistory } from "history";
 
 import App from "./App";
 
-const mount = (el, { onNavigate, defaultHistory, initalPath }) => {
+const mount = (el, { onSignIn, onNavigate, defaultHistory, initalPath }) => {
   const history = defaultHistory || createMemoryHistory({
     initialEntries: [initalPath],
   });
@@ -13,14 +13,14 @@ const mount = (el, { onNavigate, defaultHistory, initalPath }) => {
       history.listen(onNavigate)
   }
 
-  ReactDOM.render(<App history={history} />, el);
+  ReactDOM.render(<App onSignIn={onSignIn} history={history} />, el);
 
   // following code for handling navigation parent & child
   return {
     onParentNavigate({ pathname: nextPathname }) {
       const { pathname } = history.location;
 
-      if(pathname != nextPathname){
+      if(pathname !== nextPathname){
         history.push(nextPathname)
       }
     }
@@ -29,7 +29,7 @@ const mount = (el, { onNavigate, defaultHistory, initalPath }) => {
 };
 
 if (process.env.NODE_ENV === "development") {
-  const devRoot = document.querySelector("#dev-marketing");
+  const devRoot = document.querySelector("#dev-auth");
 
   if (devRoot) {
     mount(devRoot, { defaultHistory: createBrowserHistory() }); // defaultHistory is used to run app in isolation

@@ -1,0 +1,46 @@
+name: deploy-marketing
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'marketing/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: marketing
+
+      - name: Build
+        run: npm run build
+        working-directory: marketing
+
+      - name: Upload to AWS S3
+        uses: actions/upload-artifact@v2
+        with:
+          name: marketing-dist
+          path: marketing/dist
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: YOUR_AWS_REGION
+
+      - name: Sync to S3
+        run: aws s3 sync container/dist s3://${{ secrets.AWS_S3_BUCKET_NAME }}/marketing/latest
+

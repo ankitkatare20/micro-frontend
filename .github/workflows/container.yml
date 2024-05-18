@@ -56,6 +56,8 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: container
+        env:
+          PRODUCTION_DOMAIN: ${{secrets.PRODUCTION_DOMAIN}} // this used for domain name 
 
       - name: Upload to AWS S3
         uses: actions/upload-artifact@v2
